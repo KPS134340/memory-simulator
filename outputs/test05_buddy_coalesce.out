@@ -1,0 +1,45 @@
+Welcome to MemSim. Type 'help' for commands.
+> Memory initialized with 1024 bytes.
+Initial Free Block Size: 976 bytes.
+Cache System Initialized:
+  L1: 64B, Block 8B, 1-way
+  L2: 256B, Block 8B, 2-way
+  L3: 1024B, Block 64B, 8-way
+> Warning: Switching to Buddy System at runtime. Initializing Buddy Allocator...
+Buddy Allocator Initialized. Total Size: 1024 (Order 10)
+Strategy changed to Buddy Allocator.
+> Buddy Alloc: Order 8 (256 bytes)
+Allocated at address: 48
+> Buddy Alloc: Order 8 (256 bytes)
+Allocated at address: 304
+> > Error: No allocated block found with ID or Address 1
+> Error: No allocated block found with ID or Address 2
+> > Buddy Alloc: Order 9 (512 bytes)
+Allocated at address: 560
+> > 
+=== Memory System Statistics ===
+Memory Utilization: 20.3125% (208/1024 bytes)
+Internal Fragmentation: 0 bytes
+External Fragmentation: 0%
+Allocation Requests: 3
+Successful Allocs:   3
+Success Rate:        100%
+==============================
+
+
+=== Cache Statistics ===
+L1 Cache Stats:
+  Hits: 0
+  Misses: 0
+  Hit Rate: 0.00%
+L2 Cache Stats:
+  Hits: 0
+  Misses: 0
+  Hit Rate: 0.00%
+L3 Cache Stats:
+  Hits: 0
+  Misses: 0
+  Hit Rate: 0.00%
+========================
+
+> 

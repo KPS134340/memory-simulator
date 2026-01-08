@@ -1,0 +1,93 @@
+Welcome to MemSim. Type 'help' for commands.
+> Memory initialized with 4096 bytes.
+Initial Free Block Size: 4048 bytes.
+Cache System Initialized:
+  L1: 64B, Block 8B, 1-way
+  L2: 256B, Block 8B, 2-way
+  L3: 1024B, Block 64B, 8-way
+> Cache Policy set to LRU
+Cache Policy set to LRU
+> VM Initialized: Page Size=64, Virtual Pages=1024, Physical Frames=64
+Virtual Memory Enabled.
+> > > > >   Page Fault at address 0 (Page 0)
+  Virtual Address 0 -> Physical Address 0
+Read from address 0
+>   Page Fault at address 64 (Page 1)
+  Virtual Address 64 -> Physical Address 64
+Read from address 64
+>   Page Fault at address 128 (Page 2)
+  Virtual Address 128 -> Physical Address 128
+Read from address 128
+>   Page Fault at address 192 (Page 3)
+  Virtual Address 192 -> Physical Address 192
+Read from address 192
+>   Page Fault at address 256 (Page 4)
+  Virtual Address 256 -> Physical Address 256
+Read from address 256
+>   Page Fault at address 320 (Page 5)
+  Virtual Address 320 -> Physical Address 320
+Read from address 320
+>   Page Fault at address 384 (Page 6)
+  Virtual Address 384 -> Physical Address 384
+Read from address 384
+>   Page Fault at address 448 (Page 7)
+  Virtual Address 448 -> Physical Address 448
+Read from address 448
+>   Page Fault at address 512 (Page 8)
+  Virtual Address 512 -> Physical Address 512
+Read from address 512
+>   Page Fault at address 576 (Page 9)
+  Virtual Address 576 -> Physical Address 576
+Read from address 576
+>   Page Fault at address 640 (Page 10)
+  Virtual Address 640 -> Physical Address 640
+Read from address 640
+>   Page Fault at address 704 (Page 11)
+  Virtual Address 704 -> Physical Address 704
+Read from address 704
+>   Page Fault at address 768 (Page 12)
+  Virtual Address 768 -> Physical Address 768
+Read from address 768
+>   Page Fault at address 832 (Page 13)
+  Virtual Address 832 -> Physical Address 832
+Read from address 832
+>   Page Fault at address 896 (Page 14)
+  Virtual Address 896 -> Physical Address 896
+Read from address 896
+> >   Page Fault at address 4096 (Page 64)
+  Virtual Address 4096 -> Physical Address 960
+Read from address 4096
+> > 
+=== Memory System Statistics ===
+Memory Utilization: 0% (0/4096 bytes)
+Internal Fragmentation: 0 bytes
+External Fragmentation: 0%
+Allocation Requests: 0
+Successful Allocs:   0
+Success Rate:        0%
+==============================
+
+
+=== Cache Statistics ===
+L1 Cache Stats:
+  Hits: 0
+  Misses: 16
+  Hit Rate: 0.00%
+L2 Cache Stats:
+  Hits: 0
+  Misses: 16
+  Hit Rate: 0.00%
+L3 Cache Stats:
+  Hits: 0
+  Misses: 16
+  Hit Rate: 0.00%
+========================
+
+
+=== Virtual Memory Statistics ===
+  Page Faults: 16
+  Page Hits:   0
+  Hit Rate:    0.00%
+=================================
+
+> 

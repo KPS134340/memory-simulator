@@ -1,0 +1,46 @@
+Welcome to MemSim. Type 'help' for commands.
+> Memory initialized with 1024 bytes.
+Initial Free Block Size: 976 bytes.
+Cache System Initialized:
+  L1: 64B, Block 8B, 1-way
+  L2: 256B, Block 8B, 2-way
+  L3: 1024B, Block 64B, 8-way
+> Strategy changed to Best Fit.
+> Allocated block id 1 at address 48 (Strategy: 1)
+Allocated at address: 48
+> Allocated block id 2 at address 200 (Strategy: 1)
+Allocated at address: 200
+> Allocated block id 3 at address 352 (Strategy: 1)
+Allocated at address: 352
+> Freeing Block ID 2 (Address 200)...
+> Allocated block id 2 at address 200 (Strategy: 1)
+Allocated at address: 200
+> Allocated block id 4 at address 504 (Strategy: 1)
+Allocated at address: 504
+> > 
+=== Memory System Statistics ===
+Memory Utilization: 36.7188% (376/1024 bytes)
+Internal Fragmentation: 18 bytes
+External Fragmentation: 0%
+Allocation Requests: 5
+Successful Allocs:   5
+Success Rate:        100%
+==============================
+
+
+=== Cache Statistics ===
+L1 Cache Stats:
+  Hits: 0
+  Misses: 0
+  Hit Rate: 0.00%
+L2 Cache Stats:
+  Hits: 0
+  Misses: 0
+  Hit Rate: 0.00%
+L3 Cache Stats:
+  Hits: 0
+  Misses: 0
+  Hit Rate: 0.00%
+========================
+
+> 
