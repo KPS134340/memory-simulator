@@ -2,22 +2,17 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-
 int main() {
   MemoryManager mem;
   bool initialized = false;
-
   std::string command;
   std::cout << "Welcome to MemSim. Type 'help' for commands." << std::endl;
-
   while (true) {
     std::cout << "> ";
     std::getline(std::cin, command);
-
     std::stringstream ss(command);
     std::string action;
     ss >> action;
-
     if (action == "exit") {
       break;
     } else if (action == "init") {
@@ -29,7 +24,6 @@ int main() {
         std::cout << "Usage: init <size>" << std::endl;
       }
     }
-
     else if (action == "help") {
       std::cout << "Commands:\n";
       std::cout << "  init <size>          - Initialize memory" << std::endl;
@@ -46,7 +40,6 @@ int main() {
       std::cout << "  stats                - Show usage stats" << std::endl;
       std::cout << "  exit                 - Quit program" << std::endl;
     }
-
     else if (!initialized) {
       std::cout << "Error: Memory not initialized. Run 'init <size>' first."
                 << std::endl;
@@ -56,8 +49,6 @@ int main() {
       if (ss >> size) {
         void *ptr = mem.malloc(size);
         if (ptr) {
-          // We display the offset relative to base, so the user can 'free' it
-          // easily
           size_t offset = mem.get_offset_from_ptr(ptr);
           std::cout << "Allocated at address: " << offset << std::endl;
         } else {
@@ -67,7 +58,6 @@ int main() {
     } else if (action == "free") {
       int value;
       if (ss >> value) {
-        // Now handles both ID and Address automatically
         mem.free_smart(value);
       } else {
         std::cout << "Usage: free <block_id> OR free <address>" << std::endl;
@@ -86,7 +76,7 @@ int main() {
       }
     } else if (action == "write") {
       size_t addr;
-      int value; // dummy
+      int value;  
       if (ss >> addr >> value) {
         mem.access(addr, 'W');
         std::cout << "Wrote " << value << " to address " << addr << std::endl;
@@ -94,18 +84,13 @@ int main() {
         std::cout << "Usage: write <address> <value>" << std::endl;
       }
     }
-
     else if (action == "set") {
-      // Looking for input like: set allocator best fit
       std::string target, strategy_name, extra;
       ss >> target >> strategy_name;
-
       if (target == "allocator") {
-        // Check if there's a third word (e.g., "fit" in "best fit")
         if (ss >> extra) {
           strategy_name += " " + extra;
         }
-
         if (strategy_name == "first fit") {
           mem.set_strategy(AllocationStrategy::FIRST_FIT);
           std::cout << "Strategy changed to First Fit." << std::endl;
@@ -181,6 +166,5 @@ int main() {
       }
     }
   }
-
   return 0;
 }
