@@ -4,7 +4,10 @@
 #include <deque>
 #include <iostream>
 #include <vector>
+
+
 enum class CacheReplacementPolicy { FIFO, LRU, LFU };
+
 struct CacheBlock {
   bool valid = false;
   bool dirty = false;
@@ -12,11 +15,14 @@ struct CacheBlock {
   size_t last_access_time = 0;
   size_t access_count = 0;
 };
+
 struct CacheSet {
   std::vector<CacheBlock> blocks;
   int fifo_next_victim = 0;
 };
+
 class CacheLevel {
+
 private:
   int level_id;
   size_t size;
@@ -28,6 +34,7 @@ private:
   size_t misses = 0;
   CacheReplacementPolicy policy = CacheReplacementPolicy::FIFO;
   size_t timer = 0;
+
 public:
   CacheLevel(int id, size_t size, size_t block_size, size_t associativity);
   bool access(size_t address, bool is_write);
@@ -38,11 +45,14 @@ public:
   double get_hit_rate() const;
   void print_stats() const;
 };
+
 class CacheHierarchy {
+
 private:
   CacheLevel *l1;
   CacheLevel *l2;
   CacheLevel *l3;
+
 public:
   CacheHierarchy();
   ~CacheHierarchy();
@@ -53,4 +63,5 @@ public:
   void access(size_t address, char type);
   void print_stats();
 };
+
 #endif

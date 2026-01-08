@@ -7,8 +7,12 @@
 #include "buddy_allocator.h"
 #include "cache.h"
 #include "virtual_memory.h"
+
+
 enum class AllocationStrategy { FIRST_FIT, BEST_FIT, WORST_FIT, BUDDY };
+
 class MemoryManager {
+
 private:
   std::vector<char> memory;  
   BlockHeader *head;         
@@ -26,6 +30,7 @@ private:
   BlockHeader *find_first_fit(size_t size);
   BlockHeader *find_best_fit(size_t size);
   BlockHeader *find_worst_fit(size_t size);
+
 public:
   void init(size_t size);
   void dump_memory();
@@ -42,6 +47,8 @@ public:
   void set_cache_policy(CacheReplacementPolicy policy);
   void set_vm_policy(ReplacementPolicy policy);
   void set_vm_latency(int ms);
+
   BlockHeader *get_head() { return head; }
 };
+
 #endif

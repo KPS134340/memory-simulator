@@ -5,7 +5,10 @@
 #include <cstddef>
 #include <iostream>
 #include <vector>
+
+
 class BuddyAllocator {
+
 private:
   static const int MIN_BLOCK_SIZE = 32;
   static const int MAX_LEVELS = 32;
@@ -17,6 +20,7 @@ private:
   int get_order(size_t size);
   size_t get_size_from_order(int order);
   BlockHeader *get_block(int order);
+
 public:
   BuddyAllocator();
   void init(char *memory, size_t size);
@@ -24,4 +28,5 @@ public:
   void free(void *ptr);
   void debug_lists();
 };
+
 #endif
