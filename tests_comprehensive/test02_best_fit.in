@@ -1,0 +1,11 @@
+init 1024
+set allocator best fit
+malloc 100
+malloc 100
+malloc 100
+free 2
+malloc 50
+malloc 60
+# Should pick the hole from ID 2 nicely
+stats
+exit

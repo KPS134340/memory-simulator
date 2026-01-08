@@ -1,0 +1,9 @@
+init 1024
+set allocator first fit
+malloc 100
+malloc 200
+malloc 50
+free 2
+malloc 150
+stats
+exit

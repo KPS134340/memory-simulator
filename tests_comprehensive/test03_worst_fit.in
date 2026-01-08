@@ -1,0 +1,9 @@
+init 1024
+set allocator worst fit
+malloc 200
+malloc 200
+free 1
+malloc 50
+# Should put 50 in the largest free block (which is hole 1 or the remaining space)
+stats
+exit

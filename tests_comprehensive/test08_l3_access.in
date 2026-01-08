@@ -1,0 +1,27 @@
+init 4096
+set cache policy lru
+enable_vm 64
+# Access 20 blocks. L1=8, L2=32. Fit in L2.
+# Access 40 blocks. L1=8, L2=32. Overflow L2 -> L3.
+# Loop 0..64 * 40 (stride 64)
+# Just manual unroll a bit
+read 0
+read 64
+read 128
+read 192
+read 256
+read 320
+read 384
+read 448
+read 512
+read 576
+read 640
+read 704
+read 768
+read 832
+read 896
+# ... access deep ...
+read 4096 
+# Stats should show L3 Hits/Misses
+stats
+exit

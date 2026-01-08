@@ -1,0 +1,16 @@
+init 1024
+enable_vm 64
+set vm policy clock
+# 16 Frames total (1024/64)
+# Fill memory
+read 0
+read 64
+read 128
+read 192
+# ... (Fill)
+read 1024
+# Set VM latency
+set vm latency 10
+read 2048
+stats
+exit

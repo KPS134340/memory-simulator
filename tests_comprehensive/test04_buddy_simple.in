@@ -1,0 +1,7 @@
+init 1024
+set allocator buddy
+malloc 128
+malloc 64
+malloc 256
+stats
+exit

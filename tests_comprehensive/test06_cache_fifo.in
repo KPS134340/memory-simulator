@@ -1,0 +1,18 @@
+init 4096
+set cache policy fifo
+enable_vm 64
+read 0
+read 64
+read 128
+read 192
+read 256
+read 320
+read 384
+read 448
+# L1 (8 blocks) full
+read 512
+# Should evict 0
+read 0
+# Should miss in L1
+stats
+exit

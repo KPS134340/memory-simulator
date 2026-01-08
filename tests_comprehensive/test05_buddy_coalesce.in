@@ -1,0 +1,12 @@
+init 1024
+set allocator buddy
+malloc 100
+malloc 100
+# Should allocate 128 chunks
+free 1
+free 2
+# Should merge back into larger block
+malloc 250
+# Should succeed if merged
+stats
+exit

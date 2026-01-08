@@ -1,0 +1,23 @@
+init 4096
+set cache policy lru
+enable_vm 64
+# Fill L1 (0..7)
+read 0
+read 64
+read 128
+read 192
+read 256
+read 320
+read 384
+read 448
+# Access 0 again (Should update LRU time)
+read 0
+# Access new block 512
+read 512
+# Should evict 64 (LRU), NOT 0
+read 0
+# Should Hit L1
+read 64
+# Should Miss L1
+stats
+exit
