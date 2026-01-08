@@ -35,7 +35,6 @@ int VirtualMemoryManager::find_free_frame() {
 }
 
 int VirtualMemoryManager::evict_page() {
-  // Select victim based on policy
   size_t victim_page_idx = -1;
 
   if (policy == ReplacementPolicy::FIFO) {
@@ -44,13 +43,10 @@ int VirtualMemoryManager::evict_page() {
       fifo_pages.pop_front();
     }
   } else if (policy == ReplacementPolicy::LRU) {
-    // Find page with smallest last_access_time among valid pages
     size_t min_time = static_cast<size_t>(-1);
     int victim_frame = -1;
 
     for (size_t i = 0; i < total_frames; ++i) {
-      // frame_table holds the page number.
-      // If it's valid, check its time.
       int p_idx = frame_table[i];
       if (p_idx != -1) {
         if (page_table[p_idx].last_access_time < min_time) {
@@ -61,25 +57,14 @@ int VirtualMemoryManager::evict_page() {
       }
     }
   } else if (policy == ReplacementPolicy::CLOCK) {
-    // Clock Algorithm
-    // Circular scan of frames. frame_table entries are pages.
-    // We start at clock_hand.
-
     int loops = 0;
     while (loops < 2) {
-      // We loop at most twice. First pass clears references, second pass finds
-      // victim. Worst case is all ref bits set -> clear all, restart -> find
-      // first.
-
       int p_idx = frame_table[clock_hand];
 
       if (p_idx != -1) {
         if (page_table[p_idx].reference_bit) {
-          // Give second chance
           page_table[p_idx].reference_bit = false;
-          // Advance hand
         } else {
-          // Violation found! Evict this one.
           victim_page_idx = p_idx;
           break;
         }
@@ -87,35 +72,31 @@ int VirtualMemoryManager::evict_page() {
 
       clock_hand = (clock_hand + 1) % total_frames;
 
-      // Safety against infinite loop if frame table is empty (should handled by
-      // find free though)
       if (clock_hand == 0)
         loops++;
     }
 
-    // If we found a victim, advance hand one last time for next call
     if (victim_page_idx != static_cast<size_t>(-1)) {
       clock_hand = (clock_hand + 1) % total_frames;
     }
   }
 
   if (victim_page_idx != static_cast<size_t>(-1)) {
-    // Evict
     int frame = page_table[victim_page_idx].frame_number;
     page_table[victim_page_idx].valid = false;
     page_table[victim_page_idx].frame_number = -1;
-    frame_table[frame] = -1; // Temporarily free, will be reused immediately
+    frame_table[frame] = -1;
 
     std::cout << "  Evicting Page " << victim_page_idx << " from Frame "
               << frame << std::endl;
     return frame;
   }
-  return -1; // Should not happen if memory is full
+  return -1;
 }
 
 bool VirtualMemoryManager::translate(size_t v_addr, size_t &p_addr) {
   if (page_size == 0)
-    return false; // Not init
+    return false;
 
   access_counter++;
   size_t page_idx = v_addr / page_size;
@@ -128,22 +109,19 @@ bool VirtualMemoryManager::translate(size_t v_addr, size_t &p_addr) {
   }
 
   if (page_table[page_idx].valid) {
-    // Hit
     page_hits++;
     page_table[page_idx].last_access_time = access_counter;
-    page_table[page_idx].reference_bit = true; // Set Ref Bit for Clock
+    page_table[page_idx].reference_bit = true;
 
     int frame = page_table[page_idx].frame_number;
     p_addr = (frame * page_size) + offset;
     return true;
   }
 
-  // Page Fault
   page_faults++;
   std::cout << "  Page Fault at address " << v_addr << " (Page " << page_idx
             << ")" << std::endl;
 
-  // Simulate Disk Latency
   if (disk_latency_ms > 0) {
     std::cout << "  (Simulating Disk I/O: " << disk_latency_ms << "ms)..."
               << std::endl;
@@ -162,11 +140,10 @@ bool VirtualMemoryManager::translate(size_t v_addr, size_t &p_addr) {
     return false;
   }
 
-  // Load Page
   page_table[page_idx].valid = true;
   page_table[page_idx].frame_number = frame;
   page_table[page_idx].last_access_time = access_counter;
-  page_table[page_idx].reference_bit = true; // Initial reference is true
+  page_table[page_idx].reference_bit = true;
   frame_table[frame] = page_idx;
 
   if (policy == ReplacementPolicy::FIFO) {

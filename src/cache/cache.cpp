@@ -32,20 +32,17 @@ void CacheLevel::set_policy(CacheReplacementPolicy p) {
 }
 
 bool CacheLevel::access(size_t address, bool is_write) {
-  timer++; // Increment global time for this level
+  timer++;
 
   size_t index = (address / block_size) % num_sets;
   size_t tag = address / (block_size * num_sets);
 
   CacheSet &set = sets[index];
 
-  // 1. Check for Hit
   for (size_t i = 0; i < set.blocks.size(); ++i) {
     if (set.blocks[i].valid && set.blocks[i].tag == tag) {
-      // HIT
       hits++;
 
-      // Update State for Replacement Policies
       set.blocks[i].last_access_time = timer;
       set.blocks[i].access_count++;
 
@@ -56,13 +53,10 @@ bool CacheLevel::access(size_t address, bool is_write) {
     }
   }
 
-  // 2. Handle Miss
   misses++;
 
-  // Find Victim
   int victim_idx = -1;
 
-  // First check for invalid (empty) block - Fill it first!
   for (size_t i = 0; i < set.blocks.size(); ++i) {
     if (!set.blocks[i].valid) {
       victim_idx = i;
@@ -71,14 +65,12 @@ bool CacheLevel::access(size_t address, bool is_write) {
   }
 
   if (victim_idx == -1) {
-    // Set is full, use Replacement Policy
 
     if (policy == CacheReplacementPolicy::FIFO) {
       victim_idx = set.fifo_next_victim;
       set.fifo_next_victim = (set.fifo_next_victim + 1) % associativity;
     } else if (policy == CacheReplacementPolicy::LRU) {
-      // Find min last_access_time
-      size_t min_time = -1; // Max size_t
+      size_t min_time = -1;
       for (size_t i = 0; i < set.blocks.size(); ++i) {
         if (set.blocks[i].last_access_time < min_time) {
           min_time = set.blocks[i].last_access_time;
@@ -86,14 +78,12 @@ bool CacheLevel::access(size_t address, bool is_write) {
         }
       }
     } else if (policy == CacheReplacementPolicy::LFU) {
-      // Find min access_count
-      size_t min_count = -1; // Max size_t
+      size_t min_count = -1;
       for (size_t i = 0; i < set.blocks.size(); ++i) {
         if (set.blocks[i].access_count < min_count) {
           min_count = set.blocks[i].access_count;
           victim_idx = i;
         } else if (set.blocks[i].access_count == min_count) {
-          // Tie-break with LRU logic (optional but good practice)
           if (set.blocks[i].last_access_time <
               set.blocks[victim_idx].last_access_time) {
             victim_idx = i;
@@ -105,12 +95,11 @@ bool CacheLevel::access(size_t address, bool is_write) {
 
   CacheBlock &victim = set.blocks[victim_idx];
 
-  // Update block
   victim.valid = true;
   victim.tag = tag;
   victim.dirty = is_write;
   victim.last_access_time = timer;
-  victim.access_count = 1; // Reset count for new block
+  victim.access_count = 1;
 
   return false;
 }
@@ -196,17 +185,14 @@ void CacheHierarchy::access(size_t address, char type) {
 
   bool is_write = (type == 'W' || type == 'w');
 
-  // Access L1
   bool l1_hit = l1->access(address, is_write);
   if (l1_hit)
     return;
 
-  // L1 Miss -> Access L2
   bool l2_hit = l2->access(address, is_write);
   if (l2_hit)
     return;
 
-  // L2 Miss -> Access L3
   l3->access(address, is_write);
 }
 

@@ -265,8 +265,6 @@ void MemoryManager::init(size_t size) {
 
 void MemoryManager::enable_vm(size_t page_size) {
   use_virtual_memory = true;
-  // Assume Virtual Size is larger than Physical, e.g., 4x or configurable.
-  // For simulation, let's say 64KB virtual.
   size_t virtual_size = 65536;
   vm_system.init(page_size, virtual_size, total_size);
   std::cout << "Virtual Memory Enabled." << std::endl;
@@ -277,19 +275,16 @@ void MemoryManager::access(size_t address, char rw) {
 
   if (use_virtual_memory) {
     size_t p_addr;
-    bool result =
-        vm_system.translate(address, p_addr); // This handles faults internally
+    bool result = vm_system.translate(address, p_addr);
     if (result) {
       std::cout << "  Virtual Address " << address << " -> Physical Address "
                 << p_addr << std::endl;
       final_addr = p_addr;
     } else {
-      // Fault failed (should not happen in this simple model)
       return;
     }
   }
 
-  // Check if address is valid (Physical)
   if (final_addr >= total_size) {
     std::cout << "Error: Access violation at physical address " << final_addr
               << std::endl;
@@ -304,7 +299,7 @@ void MemoryManager::dump_memory() {
     return;
   }
 
-  std::cout << "\n--- Memory Dump ---" << std::endl;
+  std::cout << "\n--- Memory dump ---" << std::endl;
   BlockHeader *current = head;
   size_t offset = 0;
 
@@ -340,7 +335,6 @@ void *MemoryManager::malloc(size_t size) {
 
   BlockHeader *candidate = nullptr;
 
-  // 1. Find a candidate based on current strategy
   switch (current_strategy) {
   case AllocationStrategy::FIRST_FIT:
     candidate = find_first_fit(aligned_size);
@@ -352,15 +346,14 @@ void *MemoryManager::malloc(size_t size) {
     candidate = find_worst_fit(aligned_size);
     break;
   default:
-    break; // BUDDY handled separately
+    break;
   }
 
-  // 2. If no memory found, return null
   if (candidate == nullptr) {
     return nullptr;
   }
 
-  // 3. Split Logic (Same as before, just using 'candidate')
+  // Split Logic
   if (candidate->size >= aligned_size + sizeof(BlockHeader) + 1) {
     BlockHeader *new_block =
         reinterpret_cast<BlockHeader *>(reinterpret_cast<char *>(candidate) +
@@ -378,7 +371,6 @@ void *MemoryManager::malloc(size_t size) {
       new_block->next->prev = new_block;
   }
 
-  // 4. Update Metadata
   candidate->is_free = false;
   candidate->id = get_next_available_id();
   candidate->padding = padding;
@@ -402,8 +394,7 @@ void MemoryManager::free(void *ptr) {
     return;
   }
 
-  // Robustness Fix: Iterate to verify this pointer is actually the start of a
-  // block
+  // Robustness Fix: Verify pointer
   BlockHeader *current = head;
   bool found = false;
 
@@ -429,11 +420,9 @@ void MemoryManager::free(void *ptr) {
     return;
   }
 
-  // Reuse the logic via free_by_id or just proceed here
-  // Let's proceed here to keep it self-contained for now
   std::cout << "Freeing Block ID " << current->id << "..." << std::endl;
   current->is_free = true;
-  current->id = 0; // Clear ID
+  current->id = 0;
 
   // Coalesce Next
   if (current->next && current->next->is_free) {
@@ -455,12 +444,9 @@ void MemoryManager::free(void *ptr) {
 void MemoryManager::free_by_id(int id) {
   BlockHeader *current = head;
   while (current != nullptr) {
-    // Find the block with this ID that is NOT free
     if (!current->is_free && current->id == id) {
-
-      // We found it! Now we need the data pointer to call our standard free
       void *ptr = reinterpret_cast<char *>(current) + sizeof(BlockHeader);
-      free(ptr); // Reuse the robust free logic above
+      free(ptr);
       return;
     }
     current = current->next;
@@ -473,7 +459,7 @@ void MemoryManager::free_smart(int value) {
   BlockHeader *current = head;
   BlockHeader *target = nullptr;
 
-  // 1. First, search for a matching ID
+  // Search by ID
   while (current != nullptr) {
     if (!current->is_free && current->id == value) {
       target = current;
@@ -482,11 +468,10 @@ void MemoryManager::free_smart(int value) {
     current = current->next;
   }
 
-  // 2. If no ID found, treat 'value' as an offset (Address)
+  // Search by Address
   if (target == nullptr) {
     void *ptr = get_ptr_from_offset(static_cast<size_t>(value));
     if (ptr) {
-      // Check if this pointer corresponds to a valid block start
       current = head;
       while (current != nullptr) {
         void *data_loc =
@@ -502,14 +487,12 @@ void MemoryManager::free_smart(int value) {
     }
   }
 
-  // 3. Execution
   if (target != nullptr) {
     std::cout << "Freeing Block ID " << target->id << " (Address "
               << get_offset_from_ptr(reinterpret_cast<char *>(target) +
                                      sizeof(BlockHeader))
               << ")..." << std::endl;
 
-    // Manual Free Logic (or you can call your internal free helper)
     target->is_free = true;
     target->id = 0;
 
