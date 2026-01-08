@@ -7,7 +7,6 @@ A comprehensive simulation of a memory management system, featuring multiple all
 <a href="demo_video.mov" target="_blank">
   <img src="https://img.youtube.com/vi/placeholder/0.jpg" alt="Watch the Demo Video" width="400" />
 </a>
-*(Click to play demo_video.mov)*
 
 ## Features
 
