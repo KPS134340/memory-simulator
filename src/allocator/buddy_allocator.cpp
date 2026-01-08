@@ -30,14 +30,13 @@ void BuddyAllocator::init(char *memory, size_t size) {
   max_order = get_order(size);
 
   if (get_size_from_order(max_order) > size) {
-    max_order--;  
+    max_order--;
   }
 
-  this->total_size = get_size_from_order(max_order);  
+  this->total_size = get_size_from_order(max_order);
   min_order = get_order(MIN_BLOCK_SIZE);
   BlockHeader *root = reinterpret_cast<BlockHeader *>(memory_start);
-  root->size = this->total_size -
-               sizeof(BlockHeader);  
+  root->size = this->total_size - sizeof(BlockHeader);
   root->is_free = true;
   root->next = nullptr;
   root->prev = nullptr;
@@ -71,11 +70,11 @@ BlockHeader *BuddyAllocator::get_block(int order) {
       reinterpret_cast<BlockHeader *>(reinterpret_cast<char *>(larger) + size);
   buddy->is_free = true;
   buddy->size = size - sizeof(BlockHeader);
-  buddy->next = free_lists[order];  
+  buddy->next = free_lists[order];
   buddy->prev = nullptr;
   if (free_lists[order])
     free_lists[order]->prev = buddy;
-  free_lists[order] = buddy;  
+  free_lists[order] = buddy;
   larger->size = size - sizeof(BlockHeader);
   larger->is_free = false;
   return larger;
@@ -152,22 +151,25 @@ void BuddyAllocator::free(void *ptr) {
 }
 
 void BuddyAllocator::debug_lists() {
-  std::cout << "--- Buddy Free Lists ---" << std::endl;
+  std::cout << "--- Buddy Memory Map ---" << std::endl;
 
-  for (int i = min_order; i <= max_order; ++i) {
-    int count = 0;
-    BlockHeader *curr = free_lists[i];
+  char *current = (char *)memory_start;
+  char *end = current + total_size;
 
-    while (curr) {
-      count++;
-      curr = curr->next;
-    }
+  while (current < end) {
+    BlockHeader *block = reinterpret_cast<BlockHeader *>(current);
 
-    if (count > 0) {
-      std::cout << "Order " << i << " (" << get_size_from_order(i) << " or "
-                << (1 << i) << "): " << count << " blocks" << std::endl;
-    }
+    // Calculate true block size (payload + header)
+    // Note: block->size stores payload.
+    // Total size must be power of 2.
+    size_t total_block_size = block->size + sizeof(BlockHeader);
+
+    std::cout << "  Address " << (size_t)(current - (char *)memory_start)
+              << " | Size: " << total_block_size
+              << " | Status: " << (block->is_free ? "FREE" : "ALLOCATED")
+              << std::endl;
+
+    current += total_block_size;
   }
-
   std::cout << "------------------------" << std::endl;
 }
