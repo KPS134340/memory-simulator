@@ -103,8 +103,8 @@ void BuddyAllocator::free(void *ptr) {
     return;
   BlockHeader *block = reinterpret_cast<BlockHeader *>(
       reinterpret_cast<char *>(ptr) - sizeof(BlockHeader));
-  size_t total_size = block->size + sizeof(BlockHeader);
-  int order = get_order(total_size);
+  size_t block_total_size = block->size + sizeof(BlockHeader);
+  int order = get_order(block_total_size);
   char *block_addr = reinterpret_cast<char *>(block);
 
   while (order < max_order) {
@@ -112,10 +112,16 @@ void BuddyAllocator::free(void *ptr) {
     size_t relative_offset = (size_t)(block_addr - memory_start);
     size_t buddy_offset = relative_offset ^ buddy_size;
     char *buddy_addr = memory_start + buddy_offset;
+
+    // Bounds check
+    if (buddy_addr < memory_start || buddy_addr >= memory_start + total_size) {
+      break;
+    }
+
     BlockHeader *buddy = reinterpret_cast<BlockHeader *>(buddy_addr);
-    bool buddy_is_free_at_level = false;
     size_t buddy_current_total = buddy->size + sizeof(BlockHeader);
 
+    bool buddy_is_free_at_level = false;
     if (buddy->is_free && buddy_current_total == buddy_size) {
       buddy_is_free_at_level = true;
     }

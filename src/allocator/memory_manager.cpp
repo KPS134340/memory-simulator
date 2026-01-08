@@ -5,7 +5,6 @@
 #include <iostream>
 #include <ostream>
 
-
 size_t MemoryManager::align(size_t n) { return (n + 7) & ~7; }
 
 void *MemoryManager::get_ptr_from_offset(size_t offset) {
@@ -61,7 +60,7 @@ BlockHeader *MemoryManager::find_first_fit(size_t size) {
 BlockHeader *MemoryManager::find_best_fit(size_t size) {
   BlockHeader *current = head;
   BlockHeader *best_block = nullptr;
-  size_t smallest_diff = static_cast<size_t>(-1);  
+  size_t smallest_diff = static_cast<size_t>(-1);
 
   while (current != nullptr) {
 
@@ -106,8 +105,8 @@ BlockHeader *MemoryManager::find_worst_fit(size_t size) {
 void MemoryManager::print_stats() {
   BlockHeader *current = head;
   size_t total_free_mem = 0;
-  size_t total_used_mem = 0;       
-  size_t total_internal_frag = 0;  
+  size_t total_used_mem = 0;
+  size_t total_internal_frag = 0;
   size_t largest_free_block = 0;
 
   while (current != nullptr) {
@@ -198,7 +197,7 @@ void MemoryManager::init(size_t size) {
 
   if (current_strategy == AllocationStrategy::BUDDY) {
     buddy_system.init(memory.data(), size);
-    head = nullptr;  
+    head = nullptr;
     cache_system.init(64, 8, 1, 256, 8, 2, 1024, 64, 8);
     return;
   }
@@ -446,27 +445,8 @@ void MemoryManager::free_smart(int value) {
   }
 
   if (target != nullptr) {
-    std::cout << "Freeing Block ID " << target->id << " (Address "
-              << get_offset_from_ptr(reinterpret_cast<char *>(target) +
-                                     sizeof(BlockHeader))
-              << ")..." << std::endl;
-    target->is_free = true;
-    target->id = 0;
-
-    if (target->next && target->next->is_free) {
-      target->size += sizeof(BlockHeader) + target->next->size;
-      target->next = target->next->next;
-      if (target->next)
-        target->next->prev = target;
-    }
-
-    if (target->prev && target->prev->is_free) {
-      target->prev->size += sizeof(BlockHeader) + target->size;
-      target->prev->next = target->next;
-      if (target->next)
-        target->next->prev = target->prev;
-    }
-
+    void *ptr = reinterpret_cast<char *>(target) + sizeof(BlockHeader);
+    free(ptr);
   } else {
     std::cout << "Error: No allocated block found with ID or Address " << value
               << std::endl;
