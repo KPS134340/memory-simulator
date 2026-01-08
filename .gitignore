@@ -1,0 +1,18 @@
+# Binaries and Objects
+memsim_app
+*.o
+*.dSYM/
+*.exe
+*.out
+
+# Outputs
+outputs/
+outputs_edge/
+outputs_new/
+tests_new_processed/
+
+# System
+.DS_Store
+
+# Brain/Agent
+.gemini/
